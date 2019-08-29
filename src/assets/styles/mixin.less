@@ -1,0 +1,61 @@
+@base-color: #E14C46;
+
+
+.flex(@justify: center, @align: center, @dir: row, @wrap: nowrap) {
+    display        : flex;
+    justify-content: @justify;
+    align-items    : @align;
+    flex-direction : @dir;
+    flex-wrap      : @wrap;
+}
+
+.ellipsis() {
+    overflow     : hidden;
+    text-overflow: ellipsis;
+    white-space  : nowrap;
+}
+
+.scrollY() {
+    overflow-y                 : auto;
+    -webkit-overflow-scrolling : touch;
+}
+
+.setBottomLine(@c: #eee, @b: solid) {
+    content         : " ";
+    position        : absolute;
+    left            : 0;
+    bottom          : 0;
+    right           : 0;
+    height          : 1px;
+    width           : 200%;
+    border-bottom   : 1px @b @c;
+    color           : @c;
+    transform-origin: 0 0;
+    transform       : scale(0.5)
+}
+
+.wh(@w: 100%, @h: 100%) {
+    width : @w;
+    height: @h;
+}
+
+
+.bg-img(@url) {
+    background-size: 100%;
+    background-image: data-uri('@{url}.png');
+    // background-image: data-uri('@{url}');
+
+    @media (-webkit-min-device-pixel-ration: 2), (min-device-pixel-ratio: 2) {
+        background-image: url('@{url}@2x.png')
+        // background-image: data-uri(@url);
+    }
+}
+
+
+.multi-ellipsis{
+    content: "...";
+    background: -webkit-linear-gradient(left,transparent,#fff 55%);
+    background: -o-linear-gradient(right,transparent,#fff 55%);
+    background: -moz-linear-gradient(right,transparent,#fff 55%);
+    background: linear-gradient(right,transparent,#fff 55%);
+}
