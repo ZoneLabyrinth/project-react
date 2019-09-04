@@ -3,6 +3,7 @@ const path = require('path')
 const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 const merge = require('webpack-merge')
 const argv = require('yargs-parser')(process.argv.slice(2))
 // const _mode = process.env.NODE_ENV || 'development'
@@ -42,10 +43,11 @@ const PATHS = {
     src: path.join(__dirname, '../src')
 }
 
+//主题定制 theme.less在styles中
 function getLessVariables(file) {
     var themeContent = fs.readFileSync(file, 'utf-8')
     var variables = {}
-    themeContent.split('\n').forEach(function(item) {
+    themeContent.split('\n').forEach(function (item) {
         //只要每一行有‘//’注释符号，此行会被忽略，建议所有样式注释单列一行
         if (item.indexOf('//') > -1 || item.indexOf('/*') > -1) {
             return
@@ -60,7 +62,7 @@ function getLessVariables(file) {
     return variables
 }
 
-const theme = getLessVariables(path.resolve(__dirname,'../src/assets/styles/theme.less'))
+const theme = getLessVariables(path.resolve(__dirname, '../src/assets/styles/theme.less'))
 
 
 
@@ -69,18 +71,23 @@ let webpackConfig = {
     entry: {
         main: './src/main.js'
     },
+    output: {
+        path: path.resolve(__dirname, '../dist'),
+        filename: '[name].[hash:5].js',
+        publicPath: '/'
+      },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                include: path.resolve(__dirname,'../src'),
+                include: path.resolve(__dirname, '../src'),
                 //多线程编译
                 use: [{
-                         loader: 'thread-loader',
-                         options:{
-                             workers: 3
-                         }
-                     },   
+                    loader: 'thread-loader',
+                    options: {
+                        workers: 3
+                    }
+                },
                     'babel-loader?cacheDirectory=true']
             },
             {
@@ -123,7 +130,7 @@ let webpackConfig = {
                 use: [
                     'style-loader',
                     'css-loader',
-                    {loader: 'less-loader', options: {modifyVars: theme}},
+                    { loader: 'less-loader', options: { modifyVars: theme } },
                 ]
             },
             {
@@ -131,30 +138,30 @@ let webpackConfig = {
                 use: [
                     'file-loader',
                     {
-                      loader: 'image-webpack-loader',
-                      options: {
-                        mozjpeg: {
-                          progressive: true,
-                          quality: 65
-                        },
-                        // optipng.enabled: false will disable optipng
-                        optipng: {
-                          enabled: false,
-                        },
-                        pngquant: {
-                          quality: '65-90',
-                          speed: 4
-                        },
-                        gifsicle: {
-                          interlaced: false,
-                        },
-                        // the webp option will enable WEBP
-                        webp: {
-                          quality: 75
+                        loader: 'image-webpack-loader',
+                        options: {
+                            mozjpeg: {
+                                progressive: true,
+                                quality: 65
+                            },
+                            // optipng.enabled: false will disable optipng
+                            optipng: {
+                                enabled: false,
+                            },
+                            pngquant: {
+                                quality: '65-90',
+                                speed: 4
+                            },
+                            gifsicle: {
+                                interlaced: false,
+                            },
+                            // the webp option will enable WEBP
+                            webp: {
+                                quality: 75
+                            }
                         }
-                      }
                     },
-                  ],
+                ],
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/,
@@ -190,6 +197,9 @@ let webpackConfig = {
         }
     },
     plugins: [
+
+        new CleanWebpackPlugin(),
+
         new HtmlWebpackPlugin({
             // filename:'index.html',
             template: path.resolve(__dirname, '../src/index.html'),
@@ -206,7 +216,7 @@ let webpackConfig = {
             },
         }),
         new HtmlWebpackTagsPlugin({
-            tags:[`${require('../build/library/library.json').name}.js`],
+            tags: [`${require('../build/library/library.json').name}.js`],
             append: false
         }),
         new MiniCssExtractPlugin({
@@ -214,7 +224,7 @@ let webpackConfig = {
             chunkFilename: _modeflag ? 'styles/[id].[hash:5].css' : 'styles/[id].css'
         }),
         new PurgecssPlugin({
-            paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
+            paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
         }),
         new WebpackBuildNotifyerPlugin({
             title: 'project-react',
@@ -243,5 +253,5 @@ let webpackConfig = {
 
 
 // module.exports = smp.wrap(merge(_mergeConfig, webpackConfig))
-module.exports = merge(_mergeConfig,webpackConfig)
+module.exports = merge(_mergeConfig, webpackConfig)
 

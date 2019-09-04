@@ -3,18 +3,13 @@ const path = require('path')
 const webpack = require('webpack')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 // const ASSET_PATH = process.env.ASSET_PATH || './';
-const CleanWebpackPlugin = require('clean-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
-  output: {
-    path: path.resolve(__dirname, '../dist'),
-    filename: '[name].[hash:5].js'
-    // publicPath: './'
-  },
+  
   devtool: 'source-map', // 体积小
   //多线程压缩
   optimization: {
@@ -26,8 +21,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new CleanWebpackPlugin(),
-
 
     //压缩css
     new OptimizeCssAssetsPlugin({
@@ -46,7 +39,7 @@ module.exports = {
       { from: 'build/library', to: '' },
     ]),
     //体积分析。可无
-    // new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin(),
     // 分包
     new webpack.DllReferencePlugin({
       // context: path.join(__dirname, '../'),
