@@ -75,13 +75,13 @@ let webpackConfig = {
         path: path.resolve(__dirname, '../dist'),
         filename: '[name].[hash:5].js',
         publicPath: '/'
-      },
+    },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 // include: path.resolve(__dirname, '../src'),
-                exclude:/node_modules/,
+                exclude: /node_modules/,
                 //多线程编译
                 use: [{
                     loader: 'thread-loader',
@@ -160,7 +160,13 @@ let webpackConfig = {
                             ]
                         }
                     },
-                    { loader: 'less-loader', options: { modifyVars: theme } },
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            modifyVars: theme,
+                            javascriptEnabled: true
+                        }
+                    },
                 ]
             },
             {

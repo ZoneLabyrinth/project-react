@@ -7,9 +7,14 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const PurgecssPlugin = require('purgecss-webpack-plugin')
+const glob = require('glob')
+
+const PATHS = {
+  src: path.join(__dirname, '../src')
+}
 
 module.exports = {
-  
   devtool: 'source-map', // 体积小
   //多线程压缩
   optimization: {
@@ -21,7 +26,6 @@ module.exports = {
     ],
   },
   plugins: [
-
     //压缩css
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /\.css$/g,
@@ -33,6 +37,10 @@ module.exports = {
     }),
     new UglifyJSPlugin({
       sourceMap: true
+    }),
+
+    new PurgecssPlugin({
+      paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
     }),
     // new CopyWebpackPlugin([
     //   { from: 'build/library', to: '' },
