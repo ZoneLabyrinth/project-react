@@ -34,24 +34,18 @@ module.exports = {
     new UglifyJSPlugin({
       sourceMap: true
     }),
-    
-    new CopyWebpackPlugin([
-      { from: 'build/library', to: '' },
-    ]),
+    // new CopyWebpackPlugin([
+    //   { from: 'build/library', to: '' },
+    // ]),
     //体积分析。可无
     new BundleAnalyzerPlugin(),
     // 分包
     new webpack.DllReferencePlugin({
-      // context: path.join(__dirname, '../'),
-      scope:'var',
-      manifest:require(path.resolve(__dirname,'../build/library/library.json')),
+      context: __dirname,
+      // scope:'var',
+      manifest:require('../build/library/library.json'),
     })
 
-    // //定义全局环境
-    // new webapck.DefinePlugin({
-    //     'process.env.NODE_ENV':JSON.stringify('production'),
-    //     "process.env.ASSET_PATH":JSON.stringify(ASSET_PATH)
-    // })
   ],
   mode: 'production',
 }

@@ -3,6 +3,12 @@ const webpack = require('webpack')
 
 
 module.exports = {
+
+    context: process.cwd(),
+    resolve: {
+        extensions: ['.js', '.jsx', '.json', '.less', '.css'],
+        modules: [__dirname, 'node_modules']
+    },
     entry: {
         library:[
             'react',
@@ -12,15 +18,14 @@ module.exports = {
             'axios'
         ],
     },
-    
+
     output:{
-        filename:'[name]_[hash].js',
+        filename:'[name]_[hash].dll.js',
         path: path.join(__dirname,'../build/library'),
         library:'[name]'
     },
     plugins:[
         new webpack.DllPlugin({
-            // context: path.join(__dirname, '../'),
             name:'[name]_[hash]',
             path: path.join(__dirname,'../build/library/[name].json'),
         })

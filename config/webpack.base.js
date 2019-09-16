@@ -80,7 +80,8 @@ let webpackConfig = {
         rules: [
             {
                 test: /\.js$/,
-                include: path.resolve(__dirname, '../src'),
+                // include: path.resolve(__dirname, '../src'),
+                exclude:/node_modules/,
                 //多线程编译
                 use: [{
                     loader: 'thread-loader',
@@ -215,10 +216,10 @@ let webpackConfig = {
                 removeComments: false
             },
         }),
-        new HtmlWebpackTagsPlugin({
-            tags: [`${require('../build/library/library.json').name}.js`],
-            append: false
-        }),
+        // new HtmlWebpackTagsPlugin({
+        //     tags: [`${require('../build/library/library.json').name}.js`],
+        //     append: false
+        // }),
         new MiniCssExtractPlugin({
             filename: _modeflag ? 'styles/[name].[hash:5].css' : 'styles/[name].css',
             chunkFilename: _modeflag ? 'styles/[id].[hash:5].css' : 'styles/[id].css'
