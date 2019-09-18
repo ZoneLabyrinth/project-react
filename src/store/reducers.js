@@ -1,18 +1,16 @@
-import * as types from './actionTypes'
+import * as types from './actionTypes';
 
 const initialState = {
-    appName: 'react-project'
-}
+    appName: 'react-project',
+};
 
 
 export const AppStore = (state = initialState, action) => {
     switch (action.type) {
-        case types.APP_NAME:
-            return Object.assign({}, state, {
-                appName: action.appName
-            })
+    case types.APP_NAME:
+        return { ...state, appName: action.appName };
 
-        default:
-            return state
+    default:
+        return state;
     }
-}
+};

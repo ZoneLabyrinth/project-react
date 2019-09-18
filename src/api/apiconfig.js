@@ -1,4 +1,4 @@
 
 export const apiconfig = {
-    getusers:"/users"
-}
+    getusers: '/users',
+};

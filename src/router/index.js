@@ -1,10 +1,10 @@
-import Users from '@/Users'
+import Users from '@/Users';
 
 const routers = [
     {
         path: '/users',
-        component: Users
-    }
-]
+        component: Users,
+    },
+];
 
-export default routers
+export default routers;

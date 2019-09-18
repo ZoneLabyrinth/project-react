@@ -1,5 +1,4 @@
 
+export function getQueryString(name) {
 
-export function getQueryString(name){
-    
 }
