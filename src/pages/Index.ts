@@ -1,19 +1,20 @@
-import React from 'react'
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
-import routers from '../router/index';
+import React from 'react';
+import {
+    BrowserRouter as Router, Link, Route, Switch,
+} from 'react-router-dom';
 import Api from 'api/api';
-import {Button} from 'antd-mobile'
-import {bg} from '../assets/images/photo.jpeg'
+import { Button } from 'antd-mobile';
+import routers from '../router/index';
+import { bg } from '../assets/images/photo.jpeg';
 
 
 class App extends React.Component {
-
     componentDidMount() {
-        this.getData()
+        this.getData();
     }
 
     getData = async () => {
-        let result = await Api.getUser()
+        const result = await Api.getUser();
     }
 
 
@@ -21,14 +22,14 @@ class App extends React.Component {
         return (
             <Router>
                 <div>
-                <Button type="primary" size="small" inline>small</Button>
+                    <Button type="primary" size="small" inline>small</Button>
                     <nav>
                         <ul>
                             <li>
                                 <Link to="/users">Users</Link>
                             </li>
                             <li>
-                                <img alt="" src={bg}/>
+                                <img alt="" src={bg} />
                             </li>
                         </ul>
                     </nav>
@@ -36,7 +37,10 @@ class App extends React.Component {
 
                         {
                             routers.map((router, index) => (
-                                <Route path={router.path} key={index} exact={router.exact}
+                                <Route
+                                    path={router.path}
+                                    key={index}
+                                    exact={router.exact}
                                     component={router.component}
                                 />
                             ))
@@ -44,9 +48,8 @@ class App extends React.Component {
                     </Switch>
                 </div>
             </Router>
-        )
+        );
     }
-
 }
 
-export default App
+export default App;

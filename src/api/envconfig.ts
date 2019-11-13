@@ -1,9 +1,8 @@
 
+const baseURL = 'http://rap2api.taobao.org/app/mock/229547';
+const imageURL = 'http://www.baidu.com/images';
 
-let baseURL = 'http://rap2api.taobao.org/app/mock/229547',
-    imageURL = 'http://www.baidu.com/images'
-
-console.log(process)
+console.log(process);
 // if ( process.env.NODE_ENV === 'development') {
 //     baseURL = 'http://rap2api.taobao.org/app/mock/229547/'
 // }else{
@@ -12,7 +11,7 @@ console.log(process)
 
 const envconfig = {
     baseURL,
-    imageURL
-}
+    imageURL,
+};
 
-export default envconfig
+export default envconfig;

@@ -1,8 +1,8 @@
 
 const path = require('path')
-const glob = require('glob')
+// const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
+// const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const merge = require('webpack-merge')
 const argv = require('yargs-parser')(process.argv.slice(2))
@@ -12,7 +12,7 @@ const _mergeConfig = require(`./webpack.${_mode === "production" ? "prod" : "dev
 const _modeflag = _mode === 'production' ? true : false
 //webpack优化
 // 提示框
-const WebpackBuildNotifyerPlugin = require('webpack-build-notifier')
+// const WebpackBuildNotifyerPlugin = require('webpack-build-notifier')
 // 进度条
 const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 // dashboard
@@ -24,12 +24,13 @@ const smp = new SpeedMeasurePlugin()
 
 //构建信息提示工具 必须与stats使用
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
-//压缩
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 
 //css优化
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const PurgecssPlugin = require('purgecss-webpack-plugin')
+
+//ts-loader
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
 
 const postcssAspectRatioMini = require('postcss-aspect-ratio-mini');
 const postcssPxToViewport = require('postcss-px-to-viewport');
@@ -39,9 +40,9 @@ const postcssViewportUnits = require('postcss-viewport-units');
 const cssnano = require('cssnano');
 const fs = require('fs');
 
-const PATHS = {
-    src: path.join(__dirname, '../src')
-}
+// const PATHS = {
+//     src: path.join(__dirname, '../src')
+// }
 
 //主题定制 theme.less在styles中
 function getLessVariables(file) {
@@ -69,7 +70,7 @@ const theme = getLessVariables(path.resolve(__dirname, '../src/assets/styles/the
 
 let webpackConfig = {
     entry: {
-        main: './src/main.js'
+        main: './src/main.ts'
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
@@ -83,13 +84,39 @@ let webpackConfig = {
                 // include: path.resolve(__dirname, '../src'),
                 exclude: /node_modules/,
                 //多线程编译
-                use: [{
-                    loader: 'thread-loader',
-                    options: {
-                        workers: 3
-                    }
-                },
-                    'babel-loader?cacheDirectory=true']
+                use: [
+                    {
+                        loader: 'thread-loader',
+                        options: {
+                            workers: 3,
+                        }
+                    },
+                    'babel-loader?cacheDirectory=true',
+                    'eslint-loader'
+                ]
+            },
+            {
+                test: /\.(ts|tsx)$/,
+                // include: path.resolve(__dirname, '../src'),
+                exclude: /node_modules/,
+                //多线程编译
+                use: [
+                    //在thread-loader前
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            transpileOnly: true
+                        }
+                    },
+                    {
+                        loader: 'thread-loader',
+                        options: {
+                            workers: 3,
+                        }
+                    },
+                    'babel-loader?cacheDirectory=true',
+                    'eslint-loader'
+                ]
             },
             {
                 test: /\.css$/,
@@ -206,6 +233,7 @@ let webpackConfig = {
         ]
     },
     resolve: {
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
         alias: {
             "src": path.resolve(__dirname, "../src"),
             "@": path.resolve(__dirname, "../src/components"),
@@ -213,29 +241,14 @@ let webpackConfig = {
             "api": path.resolve(__dirname, '../src/api')
         }
     },
-    optimization: {
-        splitChunks: {
-            //达到最小打包体积大小（0即引入即打包）
-            minSize: 0,
-            cacheGroups: {
-                commons: {
-                    chunks: 'initial',
-                    name: 'common',
-                    //最小引入次数
-                    minChunks: 1,
-                    maxInitialRequests: 5,
-                    minSize: 0
-                }
-            }
-        },
-        runtimeChunk: {
-            name: 'runtime'
-        }
-    },
     plugins: [
 
         new CleanWebpackPlugin(),
-
+        new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true }),
+        new MiniCssExtractPlugin({
+            filename: _modeflag ? 'styles/[name].[hash:5].css' : 'styles/[name].css',
+            chunkFilename: _modeflag ? 'styles/[id].[hash:5].css' : 'styles/[id].css'
+        }),
         new HtmlWebpackPlugin({
             // filename:'index.html',
             template: path.resolve(__dirname, '../src/index.html'),
@@ -251,43 +264,20 @@ let webpackConfig = {
                 removeComments: false
             },
         }),
-        // new HtmlWebpackTagsPlugin({
-        //     tags: [`${require('../build/library/library.json').name}.js`],
-        //     append: false
+        // new WebpackBuildNotifyerPlugin({
+        //     title: 'project-react',
+        //     suppressSuccess: true
         // }),
-        new MiniCssExtractPlugin({
-            filename: _modeflag ? 'styles/[name].[hash:5].css' : 'styles/[name].css',
-            chunkFilename: _modeflag ? 'styles/[id].[hash:5].css' : 'styles/[id].css'
-        }),
-        new PurgecssPlugin({
-            paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
-        }),
-        new WebpackBuildNotifyerPlugin({
-            title: 'project-react',
-            suppressSuccess: true
-        }),
-        new HardSourceWebpackPlugin(),
         new ProgressBarPlugin(),
         // new DashboardPlugin()
         // new ManifestPlugin(),
         new FriendlyErrorsWebpackPlugin(),
-        // function () {
-        //     // webpack4 
-        //     this.hooks.done.tap('done', (stats) => {
-        //         if (stats.compilation.errors && stats.compilation.errors.length && process.argv.indexOf('--watch') == -1) {
-        //             // 打印错误信息
-        //             console.log('build error')
-        //             //退出，跑出错误码为1
-        //             process.exit(1)
-        //         }
-        //     })
-        // }
     ],
     //仅构建错误显示信息，此为build模式下，dev模式加在dev对象里
     // stats: 'errors-only'
 }
 
 
-// module.exports = smp.wrap(merge(_mergeConfig, webpackConfig))
-module.exports = merge(_mergeConfig, webpackConfig)
+module.exports = smp.wrap(merge(_mergeConfig, webpackConfig))
+// module.exports = merge(_mergeConfig, webpackConfig)
 
